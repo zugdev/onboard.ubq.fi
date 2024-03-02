@@ -1,8 +1,4 @@
-# `@ubiquity/ts-template`
+# `@ubiquity/onboard.ubq.fi`
 
-This template repository includes support for the following:
+Generates config for organizations
 
-- TypeScript
-- Environment Variables
-- Conventional Commits
-- Automatic deployment to Cloudflare Pages
