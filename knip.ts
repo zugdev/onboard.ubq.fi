@@ -5,7 +5,19 @@ const config: KnipConfig = {
   project: ["src/**/*.ts"],
   ignore: ["src/types/config.ts"],
   ignoreExportsUsedInFile: true,
-  ignoreDependencies: [],
+  ignoreDependencies: [
+    "libsodium-wrappers",
+    "eslint-config-prettier",
+    "eslint-plugin-prettier",
+    "@ethersproject/providers",
+    "@octokit/core",
+    "@octokit/plugin-create-or-update-text-file",
+    "@octokit/rest",
+    "@types/libsodium-wrappers",
+    "@uniswap/permit2-sdk",
+    "ethers",
+    "yaml",
+  ],
 };
 
 export default config;
