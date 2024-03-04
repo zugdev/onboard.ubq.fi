@@ -1,7 +1,3 @@
-[submodule "lib/ubiquibot"]
-	path = lib/ubiquibot
-	url = https://github.com/ubiquity/ubiquibot
-	branch = development
 [submodule "lib/chainlist"]
 	path = lib/chainlist
 	url = https://github.com/DefiLlama/chainlist.git

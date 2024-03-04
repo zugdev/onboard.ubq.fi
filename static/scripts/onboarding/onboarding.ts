@@ -1,12 +1,12 @@
 import { JsonRpcSigner } from "@ethersproject/providers";
 import { createOrUpdateTextFile } from "@octokit/plugin-create-or-update-text-file";
 import { Octokit } from "@octokit/rest";
+import { BotConfig, generateConfiguration } from "@ubiquibot/configuration";
 import { PERMIT2_ADDRESS } from "@uniswap/permit2-sdk";
 import { ethers } from "ethers";
 import { parseUnits } from "ethers/lib/utils";
 import _sodium from "libsodium-wrappers";
 import YAML from "yaml";
-import { BotConfig } from "../../../lib/ubiquibot/src/types/configuration-types";
 import { erc20Abi } from "../rewards/abis/erc20Abi";
 import { getNetworkName, NetworkIds, Tokens } from "../rewards/constants";
 
@@ -34,7 +34,7 @@ const STATUS_LOG = ".status-log";
 
 let encryptedValue = "";
 
-const defaultConf = {} as BotConfig;
+const defaultConf = generateConfiguration();
 
 export async function parseYAML<T>(data: string | undefined) {
   if (!data) return undefined;
@@ -61,23 +61,6 @@ export async function parseJSON<T>(data: string) {
 
 export function stringifyYAML(value: BotConfig): string {
   return YAML.stringify(value, { defaultKeyType: "PLAIN", defaultStringType: "QUOTE_DOUBLE", lineWidth: 0 });
-}
-
-export async function getConf(): Promise<string | undefined> {
-  try {
-    const octokit = new Octokit({ auth: githubPAT.value });
-    const { data } = await octokit.rest.repos.getContent({
-      owner: orgName.value,
-      repo: REPO_NAME,
-      path: KEY_PATH,
-      mediaType: {
-        format: "raw",
-      },
-    });
-    return data as unknown as string;
-  } catch (error: unknown) {
-    return undefined;
-  }
 }
 
 function getTextBox(text: string) {
@@ -216,17 +199,14 @@ async function handleInstall(
       });
     }
 
-    const conf = await getConf();
-
     const updatedConf = defaultConf;
-    const parsedConf = await parseYAML<BotConfig>(conf);
     updatedConf.keys[PRIVATE_ENCRYPTED_KEY_NAME] = encryptedValue;
     updatedConf.payments[EVM_NETWORK_KEY_NAME] = Number(chainIdSelect.value);
 
     // combine configs (default + remote org wide)
-    const combinedConf = Object.assign(updatedConf, parsedConf);
+    const combinedConf = Object.assign(updatedConf, defaultConf);
 
-    const stringified = stringifyYAML(combinedConf);
+    const stringified = btoa(stringifyYAML(combinedConf));
     outKey.value = stringified;
     const { status } = await octokit.repos.createOrUpdateFileContents({
       owner: orgName.value,
