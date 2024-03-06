@@ -1,5 +1,4 @@
 describe("Homepage tests", () => {
-  // const ORG_NAME = "Ubiquity";
   const ORG_NAME = "Ubiquity";
 
   beforeEach(() => {
@@ -50,7 +49,7 @@ describe("Homepage tests", () => {
     cy.get("body").should("exist");
   });
 
-  it.only("Create onboarding repository", () => {
+  it("Create onboarding repository", () => {
     cy.visit("/");
     cy.get("#setBtn").click();
     cy.log("Display warning on empty WALLET_PRIVATE_KEY");
@@ -68,6 +67,7 @@ describe("Homepage tests", () => {
     cy.get("#outKey").then((e) => {
       expect(e.val()).not.to.be.empty;
     });
+    cy.log("Expected to be a step 2 of the form");
     cy.get("#stepper > :nth-child(2)").should("have.class", "active");
   });
 });
