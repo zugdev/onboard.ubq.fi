@@ -20,7 +20,7 @@
     "prepare": "husky install",
     "postinstall": "git submodule update --init --recursive",
     "cy:open": "cypress open",
-    "cy:run": "cypress run --browser chrome --headed"
+    "cy:run": "cypress run --browser chrome"
   },
   "keywords": [
     "typescript",
