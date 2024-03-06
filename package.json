@@ -1,7 +1,7 @@
 {
-  "name": "ts-template",
+  "name": "onboard-ubq",
   "version": "1.0.0",
-  "description": "Template repository with TypeScript support.",
+  "description": "Ubiquity onboarding page for organizations.",
   "main": "build/index.ts",
   "author": "Ubiquity DAO",
   "license": "MIT",
@@ -18,7 +18,9 @@
     "knip": "knip",
     "knip-ci": "knip --no-exit-code --reporter json",
     "prepare": "husky install",
-    "postinstall": "git submodule update --init --recursive"
+    "postinstall": "git submodule update --init --recursive",
+    "cy:open": "cypress open",
+    "cy:run": "cypress run --browser chrome"
   },
   "keywords": [
     "typescript",
@@ -46,10 +48,13 @@
     "@cspell/dict-node": "^4.0.3",
     "@cspell/dict-software-terms": "^3.3.18",
     "@cspell/dict-typescript": "^3.1.2",
+    "@types/adm-zip": "0.5.5",
     "@types/node": "^20.11.19",
     "@typescript-eslint/eslint-plugin": "^7.0.1",
     "@typescript-eslint/parser": "^7.0.1",
+    "adm-zip": "0.5.10",
     "cspell": "^8.4.0",
+    "cypress": "13.6.6",
     "esbuild": "^0.20.1",
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^9.1.0",
