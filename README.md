@@ -21,7 +21,7 @@ Should make the front-end page available at [http://localhost:8080](http://local
 - `ORG_NAME`: the name of the [organization](https://github.com/settings/organizations) where you want to add the bot
 
 ## Testing
-To test with Cypress Studio UI open, run
+To test with Cypress Studio UI, run
 ```shell
 yarn cy:open
 ```
