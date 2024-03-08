@@ -7,8 +7,9 @@ import { ethers } from "ethers";
 import { parseUnits } from "ethers/lib/utils";
 import _sodium from "libsodium-wrappers";
 import YAML from "yaml";
-import { erc20Abi } from "../rewards/abis/erc20Abi";
+import { erc20Abi } from "../rewards/abis";
 import { getNetworkName, NetworkIds, Tokens } from "../rewards/constants";
+import { renderGitHubLoginButton } from "./github-login-button";
 
 const classes = ["error", "warn", "success"];
 const inputClasses = ["input-warn", "input-error", "input-success"];
@@ -70,7 +71,6 @@ function getTextBox(text: string) {
 
 function resetToggle() {
   (walletPrivateKey.parentNode?.querySelector(STATUS_LOG) as HTMLElement).innerHTML = "";
-  (githubPAT.parentNode?.querySelector(STATUS_LOG) as HTMLElement).innerHTML = "";
   (orgName.parentNode?.querySelector(STATUS_LOG) as HTMLElement).innerHTML = "";
 }
 
@@ -394,10 +394,6 @@ async function step1Handler() {
     singleToggle("warn", `Warn: Org Name is not set.`, orgName);
     return;
   }
-  if (githubPAT.value === "") {
-    singleToggle("warn", `Warn: GitHub PAT is not set.`, githubPAT);
-    return;
-  }
 
   await sodiumEncryptedSeal(X25519_KEY, `${KEY_PREFIX}${walletPrivateKey.value}`);
   setConfig().catch((error) => {
@@ -472,6 +468,7 @@ async function init() {
     try {
       defaultConf.keys[PRIVATE_ENCRYPTED_KEY_NAME] = undefined;
       setInputListeners();
+      await renderGitHubLoginButton();
 
       setBtn.addEventListener("click", async () => {
         if (currentStep === 1) {
