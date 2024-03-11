@@ -1,5 +1,8 @@
+import { OAuthToken } from "../../static/scripts/onboarding/github-login-button";
+
 describe("Homepage tests", () => {
   const ORG_NAME = "Ubiquity";
+  let loginToken: OAuthToken;
 
   beforeEach(() => {
     cy.fixture("get-user.json").then((file) => {
@@ -37,6 +40,9 @@ describe("Homepage tests", () => {
         req.reply(file);
       }).as("githubPutConfigFile");
     });
+    cy.fixture("user-token.json").then((content) => {
+      loginToken = content;
+    });
   });
 
   it("Console is cleared of errors and warnings", () => {
@@ -50,6 +56,15 @@ describe("Homepage tests", () => {
   });
 
   it("Create onboarding repository", () => {
+    cy.visit("/");
+    cy.intercept("https://github.com/login/oauth/authorize**", (req) => {
+      req.reply({
+        statusCode: 200,
+      });
+      // Simulate login token
+      window.localStorage.setItem("sb-wfzpewmlyiozupulbuur-auth-token", JSON.stringify(loginToken));
+    }).as("githubLogin");
+    cy.get("#github-login-button").click();
     cy.visit("/");
     cy.get("#setBtn").click();
     cy.log("Display warning on empty WALLET_PRIVATE_KEY");
