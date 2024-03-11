@@ -29,7 +29,7 @@ export const esBuildContext: esbuild.BuildOptions = {
     ".svg": "dataurl",
   },
   outdir: "static/out",
-  define: createEnvDefines(["SUPABASE_URL", "SUPABASE_ANON_KEY"], { allNetworkUrls }),
+  define: createEnvDefines(["SUPABASE_URL", "SUPABASE_ANON_KEY", "FRONTEND_URL"], { allNetworkUrls }),
 };
 
 esbuild
@@ -53,6 +53,7 @@ function createEnvDefines(envVarNames: string[], extras: Record<string, unknown>
       throw new Error(`Missing environment variable: ${name}`);
     }
   }
+  // eslint-disable-next-line no-restricted-syntax
   for (const key in extras) {
     if (Object.prototype.hasOwnProperty.call(extras, key)) {
       defines[key] = JSON.stringify(extras[key]);

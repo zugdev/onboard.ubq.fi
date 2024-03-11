@@ -9,12 +9,11 @@ import _sodium from "libsodium-wrappers";
 import YAML from "yaml";
 import { erc20Abi } from "../rewards/abis";
 import { getNetworkName, NetworkIds, Tokens } from "../rewards/constants";
-import { renderGitHubLoginButton } from "./github-login-button";
+import { getSessionToken, renderGitHubLoginButton } from "./github-login-button";
 
 const classes = ["error", "warn", "success"];
 const inputClasses = ["input-warn", "input-error", "input-success"];
 const outKey = document.getElementById("outKey") as HTMLInputElement;
-const githubPAT = document.getElementById("githubPat") as HTMLInputElement;
 const orgName = document.getElementById("orgName") as HTMLInputElement;
 const walletPrivateKey = document.getElementById("walletPrivateKey") as HTMLInputElement;
 // cspell: word ress // weird cspell bug seperating add and ress
@@ -148,23 +147,15 @@ async function setConfig() {
   try {
     toggleLoader("start");
     const pluginKit = Octokit.plugin(createOrUpdateTextFile);
-    const octokit = new pluginKit({ auth: githubPAT.value });
-    const { data: userInfo } = await octokit.rest.users.getByUsername({
-      username: orgName.value,
+    const octokit = new pluginKit({ auth: getSessionToken() });
+    const { data: appInstallations } = await octokit.request("GET /orgs/{org}/installations", {
+      org: orgName.value,
+      per_page: 100,
     });
-    if (userInfo.type === "Organization") {
-      const repositoryId = await getRepoID(octokit, orgName.value, REPO_NAME);
+    const repositoryId = await upsertRepoID(octokit, orgName.value, REPO_NAME);
+    const ins = appInstallations.installations.filter((installation) => installation.app_id === APP_ID);
 
-      const { data: appInstallations } = await octokit.rest.orgs.listAppInstallations({
-        org: orgName.value,
-        per_page: 100,
-      });
-      const ins = appInstallations.installations.filter((installation) => installation.app_id === APP_ID);
-
-      await handleInstall(octokit, orgName, repositoryId, ins, chainIdSelect);
-    } else {
-      singleToggle("error", `Error: Not an organization.`, orgName);
-    }
+    await handleInstall(octokit, orgName, repositoryId, ins, chainIdSelect);
   } catch (error) {
     if (!(error instanceof Error)) {
       return console.error(error);
@@ -182,21 +173,9 @@ async function handleInstall(
   chainIdSelect: HTMLSelectElement
 ) {
   if (ins.length > 0) {
-    const installationId = ins[0].id;
-    const { data: installedRepos } = await octokit.rest.apps.listInstallationReposForAuthenticatedUser({
-      installation_id: installationId,
-    });
-    const irs = installedRepos.repositories.filter((installedRepo) => installedRepo.id === repositoryId);
-
-    if (irs.length === 0) {
-      if (!repositoryId) {
-        singleToggle("error", `Error: Repo initialization failed, try again later.`);
-        return;
-      }
-      await octokit.rest.apps.addRepoToInstallationForAuthenticatedUser({
-        installation_id: installationId,
-        repository_id: repositoryId,
-      });
+    if (!repositoryId) {
+      singleToggle("error", `Error: Repo initialization failed, try again later.`);
+      return;
     }
 
     const updatedConf = defaultConf;
@@ -228,15 +207,14 @@ async function handleInstall(
   }
 }
 
-async function getRepoID(octokit: Octokit, orgName: string, repoName: string): Promise<number | null> {
+async function upsertRepoID(octokit: Octokit, orgName: string, repoName: string): Promise<number | null> {
   let repositoryId: number | null = null;
 
   try {
-    const { data: repositoryInfo } = await octokit.rest.repos.get({
-      owner: orgName,
-      repo: repoName,
+    const { data: repositoryInfo } = await octokit.rest.search.repos({
+      q: `repo:${orgName}/${repoName}`,
     });
-    repositoryId = repositoryInfo.id;
+    repositoryId = repositoryInfo.items[0].id;
   } catch (error) {
     if (!(error instanceof Error)) {
       console.error(error);
@@ -463,12 +441,34 @@ async function step2Handler() {
   }
 }
 
+async function populateOrgs() {
+  if (getSessionToken()) {
+    const pluginKit = Octokit.plugin(createOrUpdateTextFile);
+    const octokit = new pluginKit({ auth: getSessionToken() });
+    const { data } = await octokit.rest.orgs.listForAuthenticatedUser({ per_page: 100 });
+    const selectContainer = document.getElementById("orgName");
+    if (selectContainer) {
+      selectContainer.innerHTML = "";
+      if (data.length) {
+        selectContainer.removeAttribute("disabled");
+        for (const repo of data) {
+          const optionElem = document.createElement("option");
+          optionElem.value = repo.login;
+          optionElem.innerText = repo.login;
+          selectContainer.appendChild(optionElem);
+        }
+      }
+    }
+  }
+}
+
 async function init() {
   if (defaultConf !== undefined) {
     try {
       defaultConf.keys[PRIVATE_ENCRYPTED_KEY_NAME] = undefined;
       setInputListeners();
       await renderGitHubLoginButton();
+      await populateOrgs();
 
       setBtn.addEventListener("click", async () => {
         if (currentStep === 1) {

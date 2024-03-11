@@ -159,8 +159,35 @@ textarea {
   justify-content: center;
   gap: 40px;
   padding: 32px 0;
+  position: relative;
 }
 
 .hidden {
   display: none;
+}
+
+.overlay.hidden {
+  display: none;
+}
+
+.overlay {
+  position: absolute;
+  left: -8px;
+  right: -8px;
+  top: -8px;
+  bottom: -8px;
+  -webkit-backdrop-filter: blur(3px);
+  -moz-backdrop-filter: blur(3px);
+  -o-backdrop-filter: blur(3px);
+  -ms-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-primary:disabled {
+  opacity: 33%;
+  cursor: not-allowed;
 }

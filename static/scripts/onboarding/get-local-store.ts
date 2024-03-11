@@ -2,7 +2,7 @@ export function getLocalStore<T>(key: string): T | null {
   const cachedIssues = localStorage.getItem(key);
   if (cachedIssues) {
     try {
-      return JSON.parse(cachedIssues); // as OAuthToken;
+      return JSON.parse(cachedIssues);
     } catch (error) {
       console.error(error);
     }
@@ -11,6 +11,5 @@ export function getLocalStore<T>(key: string): T | null {
 }
 
 export function setLocalStore<T>(key: string, value: T) {
-  // remove state from issues before saving to local storage
   localStorage[key] = JSON.stringify(value);
 }

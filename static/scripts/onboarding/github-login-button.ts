@@ -64,11 +64,14 @@ export interface OAuthToken {
   };
 }
 
+declare const FRONTEND_URL: string;
+
 async function gitHubLoginButtonHandler() {
   const { error } = await supabase.auth.signInWithOAuth({
     provider: "github",
     options: {
-      redirectTo: "http://localhost:8080",
+      redirectTo: FRONTEND_URL,
+      scopes: "admin:org user:read repo",
     },
   });
   if (error) {
@@ -77,12 +80,15 @@ async function gitHubLoginButtonHandler() {
 }
 const gitHubLoginButton = document.createElement("button");
 export async function renderGitHubLoginButton() {
+  const stepContainer = document.getElementById("overlay-item-container");
+  const overlay = document.getElementById("overlay");
+  const setBtn = document.getElementById("setBtn");
+
   // No need to show the OAuth button if we are already logged in
   if (getSessionToken()) {
+    overlay?.classList.add("hidden");
     return;
   }
-
-  const stepContainer = document.getElementById("step1");
 
   gitHubLoginButton.id = "github-login-button";
   gitHubLoginButton.innerHTML = "<span>Connect</span><span class='full'>&nbsp;To GitHub</span>";
@@ -90,6 +96,7 @@ export async function renderGitHubLoginButton() {
   if (stepContainer) {
     stepContainer.insertBefore(gitHubLoginButton, stepContainer.firstChild);
   }
+  setBtn?.setAttribute("disabled", "");
 }
 
 function getNewSessionToken() {
