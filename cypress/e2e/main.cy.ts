@@ -40,6 +40,26 @@ describe("Homepage tests", () => {
         req.reply(file);
       }).as("githubPutConfigFile");
     });
+    cy.fixture("get-orgs.json").then((file) => {
+      cy.intercept("GET", `https://api.github.com/user/orgs**`, (req) => {
+        req.reply(file);
+      }).as("githubGetUserOrgs");
+    });
+    cy.fixture("get-org-installations.json").then((file) => {
+      cy.intercept("GET", `https://api.github.com/orgs/${ORG_NAME.toLowerCase()}/installations**`, (req) => {
+        req.reply(file);
+      }).as("githubGetOrgInstallations");
+    });
+    cy.fixture("get-search.json").then((file) => {
+      cy.intercept("GET", `https://api.github.com/search/repositories**`, (req) => {
+        req.reply(file);
+      }).as("githubSearch");
+    });
+    cy.fixture("put-config.json").then((file) => {
+      cy.intercept("PUT", `https://api.github.com/repos/${ORG_NAME.toLowerCase()}/ubiquibot-config/contents/.github**`, (req) => {
+        req.reply(file);
+      }).as("githubPutContents");
+    });
     cy.fixture("user-token.json").then((content) => {
       loginToken = content;
     });
@@ -55,7 +75,7 @@ describe("Homepage tests", () => {
     cy.get("body").should("exist");
   });
 
-  it("Create onboarding repository", () => {
+  it.only("Create onboarding repository", () => {
     cy.visit("/");
     cy.intercept("https://github.com/login/oauth/authorize**", (req) => {
       req.reply({
@@ -66,18 +86,12 @@ describe("Homepage tests", () => {
     }).as("githubLogin");
     cy.get("#github-login-button").click();
     cy.visit("/");
+    cy.wait("@githubGetUserOrgs");
     cy.get("#setBtn").click();
     cy.log("Display warning on empty WALLET_PRIVATE_KEY");
-    cy.get(":nth-child(2) > .status-log.warn").contains(/.+/);
-    cy.get("#walletPrivateKey").type("deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef");
-    cy.get("#setBtn").click();
-    cy.log("Display warning on empty ORG_NAME");
-    cy.get(":nth-child(4) > .status-log.warn").contains(/.+/);
-    cy.get("#orgName").type(ORG_NAME);
-    cy.get("#setBtn").click();
-    cy.log("Display warning on empty GITHUB_PAT");
     cy.get(":nth-child(3) > .status-log.warn").contains(/.+/);
-    cy.get("#githubPat").type("ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
+    cy.get("#walletPrivateKey").type("deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef");
+    cy.get("#orgName").select("ubiquity");
     cy.get("#setBtn").click();
     cy.get("#outKey").then((e) => {
       expect(e.val()).not.to.be.empty;
