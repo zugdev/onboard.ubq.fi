@@ -153,9 +153,9 @@ async function setConfig() {
       per_page: 100,
     });
     const repositoryId = await upsertRepoID(octokit, orgName.value, REPO_NAME);
-    const ins = appInstallations.installations.filter((installation) => installation.app_id === APP_ID);
+    const installations = appInstallations.installations.filter((installation) => installation.app_id === APP_ID);
 
-    await handleInstall(octokit, orgName, repositoryId, ins, chainIdSelect);
+    await handleInstall(octokit, orgName, repositoryId, installations, chainIdSelect);
   } catch (error) {
     if (!(error instanceof Error)) {
       return console.error(error);
