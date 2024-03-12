@@ -1,7 +1,8 @@
-// @ts-expect-error - Could not find a declaration file for module
-import extraRpcs from "../lib/chainlist/constants/extraRpcs";
+import { execSync } from "child_process";
+import { config } from "dotenv";
 import esbuild from "esbuild";
-import * as dotenv from "dotenv";
+import extraRpcs from "../lib/chainlist/constants/extraRpcs";
+
 const typescriptEntries = ["static/scripts/onboarding/onboarding.ts"];
 const cssEntries = ["static/styles/rewards/rewards.css", "static/styles/audit-report/audit.css", "static/styles/onboarding/onboarding.css"];
 export const entries = [...typescriptEntries, ...cssEntries];
@@ -29,7 +30,10 @@ export const esBuildContext: esbuild.BuildOptions = {
     ".svg": "dataurl",
   },
   outdir: "static/out",
-  define: createEnvDefines(["SUPABASE_URL", "SUPABASE_ANON_KEY"], { allNetworkUrls }),
+  define: createEnvDefines(["SUPABASE_URL", "SUPABASE_ANON_KEY", "FRONTEND_URL"], {
+    extraRpcs: allNetworkUrls,
+    commitHash: execSync(`git rev-parse --short HEAD`).toString().trim(),
+  }),
 };
 
 esbuild
@@ -42,10 +46,10 @@ esbuild
     process.exit(1);
   });
 
-function createEnvDefines(envVarNames: string[], extras: Record<string, unknown>): Record<string, string> {
+function createEnvDefines(environmentVariables: string[], generatedAtBuild: Record<string, unknown>): Record<string, string> {
   const defines: Record<string, string> = {};
-  dotenv.config();
-  for (const name of envVarNames) {
+  config();
+  for (const name of environmentVariables) {
     const envVar = process.env[name];
     if (envVar !== undefined) {
       defines[name] = JSON.stringify(envVar);
@@ -53,11 +57,10 @@ function createEnvDefines(envVarNames: string[], extras: Record<string, unknown>
       throw new Error(`Missing environment variable: ${name}`);
     }
   }
-  for (const key in extras) {
-    if (Object.prototype.hasOwnProperty.call(extras, key)) {
-      defines[key] = JSON.stringify(extras[key]);
+  Object.keys(generatedAtBuild).forEach((key) => {
+    if (Object.prototype.hasOwnProperty.call(generatedAtBuild, key)) {
+      defines[key] = JSON.stringify(generatedAtBuild[key]);
     }
-  }
-  defines["extraRpcs"] = JSON.stringify(allNetworkUrls);
+  });
   return defines;
 }
