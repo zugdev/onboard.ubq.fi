@@ -25,7 +25,7 @@ const gitHubLoginButton = document.createElement("button");
 export async function renderGitHubLoginButton() {
   const stepContainer = document.getElementById("overlay-item-container") as HTMLDivElement;
   const overlay = document.getElementById("overlay") as HTMLDivElement;
-  const setBtn = document.getElementById("setBtn") as HTMLButtonElement;
+  const setButton = document.getElementById("setBtn") as HTMLButtonElement;
 
   // No need to show the OAuth button if we are already logged in
   if (getSessionToken()) {
@@ -39,7 +39,7 @@ export async function renderGitHubLoginButton() {
   if (stepContainer) {
     stepContainer.insertBefore(gitHubLoginButton, stepContainer.firstChild);
   }
-  setBtn?.setAttribute("disabled", "");
+  setButton.disabled = false;
 }
 
 function getNewSessionToken() {
