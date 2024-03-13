@@ -4,7 +4,7 @@ import esbuild from "esbuild";
 import extraRpcs from "../lib/chainlist/constants/extraRpcs";
 
 const typescriptEntries = ["static/scripts/onboarding/onboarding.ts"];
-const cssEntries = ["static/styles/rewards/rewards.css", "static/styles/audit-report/audit.css", "static/styles/onboarding/onboarding.css"];
+const cssEntries = ["static/styles/onboarding/onboarding.css"];
 export const entries = [...typescriptEntries, ...cssEntries];
 
 const allNetworkUrls: Record<string, string[]> = {};
