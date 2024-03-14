@@ -53,7 +53,7 @@ function getNewSessionToken() {
 }
 
 function getSessionToken() {
-  // cspell:ignore wfzpewmlyiozupulbuur
+  // cSpell: ignore wfzpewmlyiozupulbuur
   const cachedSessionToken = getLocalStore<OAuthToken>("sb-wfzpewmlyiozupulbuur-auth-token");
   if (cachedSessionToken) {
     return cachedSessionToken.provider_token;
