@@ -10,6 +10,7 @@ export function getLocalStore<T>(key: string): T | null {
   return null;
 }
 
-export function setLocalStore<T>(key: string, value: T) {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function setLocalStore<T>(key: string, value: T) {
   localStorage[key] = JSON.stringify(value);
 }

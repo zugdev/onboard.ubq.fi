@@ -65,4 +65,4 @@ function getSessionToken() {
   return null;
 }
 
-export { gitHubLoginButton, getSessionToken };
+export { getSessionToken };

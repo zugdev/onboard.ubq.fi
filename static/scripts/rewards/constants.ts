@@ -53,4 +53,5 @@ export const networkRpcs: Record<number, string[]> = {
 };
 
 export const permit2Address = "0x000000000022D473030F116dDEE9F6B43aC78BA3";
-export const nftAddress = "0xAa1bfC0e51969415d64d6dE74f27CDa0587e645b";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const nftAddress = "0xAa1bfC0e51969415d64d6dE74f27CDa0587e645b";
