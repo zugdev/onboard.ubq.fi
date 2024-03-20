@@ -1,20 +1,10 @@
 import { execSync } from "child_process";
 import { config } from "dotenv";
 import esbuild from "esbuild";
-import extraRpcs from "../lib/chainlist/constants/extraRpcs";
 
 const typescriptEntries = ["static/scripts/onboarding/onboarding.ts"];
 const cssEntries = ["static/styles/onboarding/onboarding.css"];
 export const entries = [...typescriptEntries, ...cssEntries];
-
-const allNetworkUrls: Record<string, string[]> = {};
-// this flattens all the rpcs into a single object, with key names that match the networkIds. The arrays are just of URLs per network ID.
-
-Object.keys(extraRpcs).forEach((networkId) => {
-  const officialUrls = extraRpcs[networkId].rpcs.filter((rpc) => typeof rpc === "string");
-  const extraUrls: string[] = extraRpcs[networkId].rpcs.filter((rpc) => rpc.url !== undefined).map((rpc) => rpc.url);
-  allNetworkUrls[networkId] = [...officialUrls, ...extraUrls];
-});
 
 export const esBuildContext: esbuild.BuildOptions = {
   sourcemap: true,
@@ -31,7 +21,6 @@ export const esBuildContext: esbuild.BuildOptions = {
   },
   outdir: "static/out",
   define: createEnvDefines(["SUPABASE_URL", "SUPABASE_ANON_KEY", "FRONTEND_URL"], {
-    extraRpcs: allNetworkUrls,
     commitHash: execSync(`git rev-parse --short HEAD`).toString().trim(),
   }),
 };
