@@ -7,8 +7,8 @@ import { ethers } from "ethers";
 import { parseUnits } from "ethers/lib/utils";
 import _sodium from "libsodium-wrappers";
 import YAML from "yaml";
-import { erc20Abi } from "../rewards/abis";
-import { getNetworkName, NetworkIds, Tokens } from "../rewards/constants";
+import { erc20Abi } from "./abis";
+import { getNetworkName, NetworkIds, Tokens } from "./constants";
 import { getSessionToken, renderGitHubLoginButton } from "./github-login-button";
 
 const classes = ["error", "warn", "success"];

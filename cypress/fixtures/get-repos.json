@@ -91,9 +91,7 @@
   "allow_forking": false,
   "is_template": false,
   "web_commit_signoff_required": false,
-  "topics": [
-
-  ],
+  "topics": [],
   "visibility": "private",
   "forks": 0,
   "open_issues": 0,
@@ -117,9 +115,7 @@
   "squash_merge_commit_title": "COMMIT_OR_PR_TITLE",
   "merge_commit_message": "PR_TITLE",
   "merge_commit_title": "MERGE_MESSAGE",
-  "custom_properties": {
-
-  },
+  "custom_properties": {},
   "organization": {
     "login": "Ubiquity",
     "id": 159901852,
