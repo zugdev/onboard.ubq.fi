@@ -95,9 +95,7 @@
       "allow_forking": false,
       "is_template": false,
       "web_commit_signoff_required": false,
-      "topics": [
-
-      ],
+      "topics": [],
       "visibility": "private",
       "forks": 0,
       "open_issues": 0,

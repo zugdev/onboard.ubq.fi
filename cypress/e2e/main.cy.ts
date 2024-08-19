@@ -82,6 +82,7 @@ describe("Homepage tests", () => {
         statusCode: 200,
       });
       // Simulate login token
+      // cSpell: ignore wfzpewmlyiozupulbuur
       window.localStorage.setItem("sb-wfzpewmlyiozupulbuur-auth-token", JSON.stringify(loginToken));
     }).as("githubLogin");
     cy.get("#github-login-button").click();

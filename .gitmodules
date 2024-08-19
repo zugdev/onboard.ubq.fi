@@ -1,4 +1,0 @@
-[submodule "lib/chainlist"]
-	path = lib/chainlist
-	url = https://github.com/DefiLlama/chainlist.git
-	branch = main
