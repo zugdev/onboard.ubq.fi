@@ -9,7 +9,6 @@ const config: KnipConfig = {
     "libsodium-wrappers",
     "eslint-config-prettier",
     "eslint-plugin-prettier",
-    "@ethersproject/providers",
     "@octokit/core",
     "@octokit/plugin-create-or-update-text-file",
     "@octokit/rest",
@@ -17,6 +16,8 @@ const config: KnipConfig = {
     "@uniswap/permit2-sdk",
     "ethers",
     "yaml",
+    "@supabase/supabase-js",
+    "@ubiquibot/configuration",
   ],
 };
 
