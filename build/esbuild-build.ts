@@ -1,55 +1,29 @@
-import { execSync } from "child_process";
-import { config } from "dotenv";
-import esbuild from "esbuild";
+import esbuild, { BuildOptions } from "esbuild";
 
-const typescriptEntries = ["static/scripts/onboarding/onboarding.ts"];
-const cssEntries = ["static/styles/onboarding/onboarding.css"];
-export const entries = [...typescriptEntries, ...cssEntries];
-
-export const esBuildContext: esbuild.BuildOptions = {
-  sourcemap: true,
-  entryPoints: entries,
-  bundle: true,
-  minify: false,
-  loader: {
-    ".png": "dataurl",
-    ".woff": "dataurl",
-    ".woff2": "dataurl",
-    ".eot": "dataurl",
-    ".ttf": "dataurl",
-    ".svg": "dataurl",
-  },
-  outdir: "static/out",
-  define: createEnvDefines(["SUPABASE_URL", "SUPABASE_ANON_KEY", "FRONTEND_URL"], {
-    commitHash: execSync(`git rev-parse --short HEAD`).toString().trim(),
-  }),
+const ENTRY_POINTS = {
+  typescript: ["static/main.ts"],
+  // css: ["static/style.css"],
 };
 
-esbuild
-  .build(esBuildContext)
-  .then(() => {
+const DATA_URL_LOADERS = [".png", ".woff", ".woff2", ".eot", ".ttf", ".svg"];
+
+export const esbuildOptions: BuildOptions = {
+  sourcemap: true,
+  entryPoints: [...ENTRY_POINTS.typescript /* ...ENTRY_POINTS.css */],
+  bundle: true,
+  minify: false,
+  loader: Object.fromEntries(DATA_URL_LOADERS.map((ext) => [ext, "dataurl"])),
+  outdir: "static/dist",
+};
+
+async function runBuild() {
+  try {
+    await esbuild.build(esbuildOptions);
     console.log("\tesbuild complete");
-  })
-  .catch((err) => {
+  } catch (err) {
     console.error(err);
     process.exit(1);
-  });
-
-function createEnvDefines(environmentVariables: string[], generatedAtBuild: Record<string, unknown>): Record<string, string> {
-  const defines: Record<string, string> = {};
-  config();
-  for (const name of environmentVariables) {
-    const envVar = process.env[name];
-    if (envVar !== undefined) {
-      defines[name] = JSON.stringify(envVar);
-    } else {
-      throw new Error(`Missing environment variable: ${name}`);
-    }
   }
-  Object.keys(generatedAtBuild).forEach((key) => {
-    if (Object.prototype.hasOwnProperty.call(generatedAtBuild, key)) {
-      defines[key] = JSON.stringify(generatedAtBuild[key]);
-    }
-  });
-  return defines;
 }
+
+void runBuild();
