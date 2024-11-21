@@ -1,6 +1,6 @@
 import { createAppKit } from "@reown/appkit";
 import { Ethers5Adapter } from "@reown/appkit-adapter-ethers5";
-import { mainnet } from "@reown/appkit/networks";
+import { gnosis,mainnet,polygon,optimism,arbitrum,base,bsc,blast,zksync,avalanche,celo,worldchain,zora } from "@reown/appkit/networks";
 import { ethers } from "ethers";
 import { renderErrorInModal } from "./display-popup-modal";
 
@@ -28,8 +28,8 @@ export let userSigner: ethers.Signer;
 
 export const appState = createAppKit({
   adapters: [new Ethers5Adapter()],
-  networks: [mainnet],
-  defaultNetwork: mainnet,
+  networks: [gnosis,mainnet,polygon,optimism,arbitrum,base,bsc,blast,zksync,avalanche,celo,worldchain,zora],
+  defaultNetwork: gnosis,
   metadata,
   projectId,
   features: {
