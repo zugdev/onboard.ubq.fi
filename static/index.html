@@ -42,10 +42,16 @@
           <h1>Approve Funding</h1>
           <p>The selected amount in the selected chain will be approved as budget to honor issue rewards.</p>
         </div>
-        <div class="approve-selectors">
-          <w3m-network-button></w3m-network-button>
-          <input class="amount-selector" type="text" name="amount" min="0" inputmode="numeric" placeholder="enter amount" />
-          <span class="uusd-amount">UUSD</span>
+        <div class="approve-content">
+          <div class="current-allowance">
+            <span>current allowance:</span>
+            <span class="allowance-amount">0 UUSD</span>
+          </div>
+          <div class="approve-selectors">
+            <w3m-network-button></w3m-network-button>
+            <input class="amount-selector" type="text" name="amount" min="0" inputmode="numeric" placeholder="enter amount" />
+            <span class="uusd-amount">UUSD</span>
+          </div>
         </div>
         <div class="approve-footer">
           <button class="approve-button">Approve</button>
