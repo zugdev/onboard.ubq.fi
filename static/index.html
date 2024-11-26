@@ -45,14 +45,13 @@
         <div class="approve-content">
           <div class="expected-allowance">
             <span>expected allowance:</span>
-            <span class="allowance-amount">0 UUSD</span>
+            <span class="allowance-amount">-</span>
           </div>
           <div class="approve-selectors">
             <w3m-network-button></w3m-network-button>
             <input class="amount-selector" type="text" name="amount" min="0" inputmode="numeric" placeholder="enter amount" />
-            <input class="token-selector" type="text" name="address" placeholder="enter token address"/>
-            <select class="token-options" style="display: none;">
-            </select>
+            <input class="token-selector" list="token-options" type="text" name="address" placeholder="enter token address"/>
+            <datalist id="token-options"></datalist>
           </div>
         </div>
         <div class="approve-footer">
