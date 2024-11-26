@@ -198,7 +198,7 @@ header {
   padding: 40px 0;
 }
 
-.current-allowance{
+.expected-allowance{
   padding: 10px;
   font-size: 1.1rem;
   color: #ddd;
@@ -213,6 +213,19 @@ header {
 }
 
 .amount-selector {
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+  border-radius: 80px;
+  min-width: 100px;
+  max-width: 300px;
+  width: 100%;
+  height: 10px;
+  padding: 15px;
+  font-size: 1.1rem;
+}
+
+.token-selector {
   background-color: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);
   color: white;
