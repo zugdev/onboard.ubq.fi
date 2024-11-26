@@ -3,6 +3,7 @@ import { Ethers5Adapter } from "@reown/appkit-adapter-ethers5";
 import { gnosis, mainnet, polygon, optimism, arbitrum, base, bsc, blast, zksync, avalanche, celo, worldchain, zora } from "@reown/appkit/networks";
 import { ethers } from "ethers";
 import { renderErrorInModal } from "./display-popup-modal";
+import { updateTokens } from "./populate-dropdown";
 
 // All unhandled errors are caught and displayed in a modal
 window.addEventListener("error", (event: ErrorEvent) => renderErrorInModal(event.error));
@@ -52,12 +53,19 @@ async function waitForConnection() {
   });
 }
 
+function handleNetworkSwitch() {
+  appState.subscribeCaipNetworkChange(async (newNetwork) => {
+    console.log("Network changed to:", newNetwork?.id);
+    updateTokens();
+  });
+}
+
 export async function mainModule() {
   try {
     console.log("Provider:", provider);
-
-    console.log("Waiting for user connection...");
+    updateTokens(); // update known tokens on the dropdown
     void waitForConnection();
+    handleNetworkSwitch();
   } catch (error) {
     console.error("Error in main:", error);
   }
