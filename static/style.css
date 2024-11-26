@@ -177,6 +177,7 @@ header {
 
 .approve {
   display: flex;
+  box-shadow: 0 0 10px 1px #fff;
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
