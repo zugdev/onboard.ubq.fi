@@ -70,17 +70,19 @@ header {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.6);
   justify-content: center;
   align-items: center;
   z-index: 1000;
 }
 
 .error-modal-content {
-  background-color: white;
+  border: 1px solid #f22207;
+  background-color: #111010;
   padding: 20px;
+  padding-left: 30px;
   border-radius: 8px;
-  width: 90%;
+  width: 100%;
   max-width: 500px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
@@ -93,34 +95,34 @@ header {
 
 .error-title {
   font-size: 1.5rem;
+  font-weight: 400;
   margin: 0;
-  color: #d9534f;
+  color: #f22207;
 }
 
 .close-modal {
   background: none;
   border: none;
   cursor: pointer;
-  color: #333;
 }
 
 .close-modal svg {
-  width: 24px;
-  height: 24px;
+  width: 30px;
+  height: 30px;
 }
 
 .error-modal-body {
-  margin-top: 10px;
-  color: #333;
+  margin-top: 15px;
+  color: #ffffff;
   font-size: 1rem;
   line-height: 1.5;
 }
 
 .error-message {
-  max-height: 600px;
+  max-height: 400px;
   white-space: pre-wrap;
   text-overflow: ellipsis;
-  overflow: hidden;
+  overflow-y: scroll;
   word-break: break-word;
 }
 
