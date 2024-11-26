@@ -4,6 +4,7 @@ import { gnosis, mainnet, polygon, optimism, arbitrum, base, bsc, blast, zksync,
 import { ethers } from "ethers";
 import { renderErrorInModal } from "./display-popup-modal";
 import { updateTokens } from "./populate-dropdown";
+import { setupApproveButton, setupRevokeButton, setupValidityListener } from "./handle-approval";
 
 // All unhandled errors are caught and displayed in a modal
 window.addEventListener("error", (event: ErrorEvent) => renderErrorInModal(event.error));
@@ -23,7 +24,7 @@ const metadata = {
   icons: ["https://avatars.githubusercontent.com/u/76412717"],
 };
 
-// create provider & signer for Ethereum mainnet
+// create provider & signer for gnosis
 export const provider = new ethers.providers.JsonRpcProvider("https://eth.llamarpc.com");
 export let userSigner: ethers.Signer;
 
@@ -56,14 +57,19 @@ async function waitForConnection() {
 function handleNetworkSwitch() {
   appState.subscribeCaipNetworkChange(async (newNetwork) => {
     console.log("Network changed to:", newNetwork?.id);
-    updateTokens();
+    updateTokens(); // update known tokens on the dropdown
+    setupApproveButton(); // setup approve button
+    setupRevokeButton(); // setup revoke button
   });
 }
 
 export async function mainModule() {
   try {
+    setupValidityListener(); // setup amount and token validity listeners
     console.log("Provider:", provider);
     updateTokens(); // update known tokens on the dropdown
+    setupApproveButton(); // setup approve button
+    setupRevokeButton(); // setup revoke button
     void waitForConnection();
     handleNetworkSwitch();
   } catch (error) {
