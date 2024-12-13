@@ -25,7 +25,9 @@ jobs:
         run: |
           yarn
           yarn build
-
+        env:
+          ALCHEMY_KEY: ${{ secrets.ALCHEMY_KEY }}  
+        
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
