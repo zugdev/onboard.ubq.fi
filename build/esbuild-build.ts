@@ -1,4 +1,6 @@
+import { config } from "dotenv";
 import esbuild, { BuildOptions } from "esbuild";
+config();
 
 const ENTRY_POINTS = {
   typescript: ["static/main.ts"],
@@ -14,6 +16,9 @@ export const esbuildOptions: BuildOptions = {
   minify: false,
   loader: Object.fromEntries(DATA_URL_LOADERS.map((ext) => [ext, "dataurl"])),
   outdir: "static/dist",
+  define: createEnvDefines(["ALCHEMY_KEY"], {
+    ALCHEMY_KEY: process.env.ALCHEMY_KEY
+  })
 };
 
 async function runBuild() {
@@ -27,3 +32,21 @@ async function runBuild() {
 }
 
 void runBuild();
+
+function createEnvDefines(environmentVariables: string[], generatedAtBuild: Record<string, unknown>): Record<string, string> {
+  const defines: Record<string, string> = {};
+  for (const name of environmentVariables) {
+    const envVar = process.env[name];
+    if (envVar !== undefined) {
+      defines[name] = JSON.stringify(envVar);
+    } else {
+      throw new Error(`Missing environment variable: ${name}`);
+    }
+  }
+  for (const key in generatedAtBuild) {
+    if (Object.prototype.hasOwnProperty.call(generatedAtBuild, key)) {
+      defines[key] = JSON.stringify(generatedAtBuild[key]);
+    }
+  }
+  return defines;
+}
