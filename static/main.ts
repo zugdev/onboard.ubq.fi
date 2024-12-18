@@ -1,6 +1,6 @@
-import { createAppKit } from "@reown/appkit";
+import { AppKit, createAppKit } from "@reown/appkit";
 import { Ethers5Adapter } from "@reown/appkit-adapter-ethers5";
-import { gnosis, mainnet, polygon, optimism, arbitrum, base, bsc, blast, zksync, avalanche, worldchain } from "@reown/appkit/networks";
+import { anvil, gnosis, mainnet, polygon, optimism, arbitrum, base, bsc, blast, zksync, avalanche, worldchain, AppKitNetwork } from "@reown/appkit/networks";
 import { ethers } from "ethers";
 import { renderErrorInModal } from "./display-popup-modal";
 import { updateTokens } from "./populate-dropdown";
@@ -30,6 +30,7 @@ const metadata = {
 const alchemyKey = ALCHEMY_KEY || "";
 
 const providersUrl: { [key: string]: string } = {
+  31337: `http://localhost:8545`,
   100: alchemyKey ? `https://gnosis-mainnet.g.alchemy.com/v2/${alchemyKey}` : "https://rpc.gnosischain.com",
   1: alchemyKey ? `https://eth-mainnet.alchemyapi.io/v2/${alchemyKey}` : "https://eth.llamarpc.com",
   137: alchemyKey ? `https://polygon-mainnet.g.alchemy.com/v2/${alchemyKey}` : "https://polygon.llamarpc.com",
@@ -43,9 +44,17 @@ const providersUrl: { [key: string]: string } = {
   480: alchemyKey ? `https://worldchain-mainnet.g.alchemy.com/v2/${alchemyKey}` : "https://rpc.worldchain.network"
 };
 
+let networks: [AppKitNetwork, ...AppKitNetwork[]]; 
+if (window.location.hostname === "localhost" || window.location.hostname === "0.0.0.0") {
+  console.log("enabling anvil");
+  networks = [anvil, gnosis, mainnet, polygon, optimism, arbitrum, base, bsc, blast, zksync, avalanche, worldchain];
+} else {
+  networks = [gnosis, mainnet, polygon, optimism, arbitrum, base, bsc, blast, zksync, avalanche, worldchain];
+}
+
 export const appState = createAppKit({
   adapters: [new Ethers5Adapter()],
-  networks: [gnosis, mainnet, polygon, optimism, arbitrum, base, bsc, blast, zksync, avalanche, worldchain],
+  networks,
   defaultNetwork: gnosis,
   metadata,
   projectId,
@@ -61,7 +70,6 @@ function getNetwork(): string {
 }
 
 // create provider & signer for gnosis
-const caipNetwork = appState.getCaipNetwork();
 export let provider = new ethers.providers.JsonRpcProvider(providersUrl[getNetwork()]);
 export let userSigner: ethers.Signer;
 
