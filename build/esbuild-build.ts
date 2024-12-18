@@ -17,8 +17,8 @@ export const esbuildOptions: BuildOptions = {
   loader: Object.fromEntries(DATA_URL_LOADERS.map((ext) => [ext, "dataurl"])),
   outdir: "static/dist",
   define: createEnvDefines(["ALCHEMY_KEY"], {
-    ALCHEMY_KEY: process.env.ALCHEMY_KEY || ""
-  })
+    ALCHEMY_KEY: process.env.ALCHEMY_KEY || "",
+  }),
 };
 
 async function runBuild() {

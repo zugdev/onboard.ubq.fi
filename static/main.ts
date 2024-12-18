@@ -41,10 +41,10 @@ const providersUrl: { [key: string]: string } = {
   81457: alchemyKey ? `https://blast-mainnet.g.alchemy.com/v2/${alchemyKey}` : "https://blast.drpc.org",
   324: alchemyKey ? `https://zksync-mainnet.g.alchemy.com/v2/${alchemyKey}` : "https://mainnet.era.zksync.io",
   43114: alchemyKey ? `https://avax-mainnet.g.alchemy.com/v2/${alchemyKey}` : "https://rpc.ankr.com/avalanche",
-  480: alchemyKey ? `https://worldchain-mainnet.g.alchemy.com/v2/${alchemyKey}` : "https://rpc.worldchain.network"
+  480: alchemyKey ? `https://worldchain-mainnet.g.alchemy.com/v2/${alchemyKey}` : "https://rpc.worldchain.network",
 };
 
-let networks: [AppKitNetwork, ...AppKitNetwork[]]; 
+let networks: [AppKitNetwork, ...AppKitNetwork[]];
 if (window.location.hostname === "localhost" || window.location.hostname === "0.0.0.0") {
   console.log("enabling anvil");
   networks = [anvil, gnosis, mainnet, polygon, optimism, arbitrum, base, bsc, blast, zksync, avalanche, worldchain];
@@ -89,7 +89,7 @@ async function waitForConnection() {
 }
 
 function handleNetworkSwitch() {
-  appState.subscribeCaipNetworkChange(async (newNetwork: { id: string; name: string}) => {
+  appState.subscribeCaipNetworkChange(async (newNetwork: { id: string; name: string }) => {
     switchProvider(newNetwork?.id);
     updateTokens(); // update known tokens on the dropdown
     setupApproveButton(); // setup approve button
