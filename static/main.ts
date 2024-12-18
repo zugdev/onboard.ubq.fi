@@ -54,8 +54,15 @@ export const appState = createAppKit({
   },
 });
 
+// get network
+function getNetwork(): string {
+  const network = appState.getCaipNetwork();
+  return network ? network.id.toString() : "";
+}
+
 // create provider & signer for gnosis
-export let provider = new ethers.providers.JsonRpcProvider(providersUrl[appState.getCaipNetwork().id]);
+const caipNetwork = appState.getCaipNetwork();
+export let provider = new ethers.providers.JsonRpcProvider(providersUrl[getNetwork()]);
 export let userSigner: ethers.Signer;
 
 async function waitForConnection() {
