@@ -42,7 +42,6 @@ function isValidAmount(): boolean {
 
 export function isApprovalValid() {
   const isConnected = appState.getIsConnectedState();
-  console.log(isConnected);
   const isAddressValid = isValidAddress();
   const isAmountValid = isValidAmount();
 
