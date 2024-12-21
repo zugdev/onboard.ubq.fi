@@ -58,7 +58,7 @@ async function getCurrentAllowance() {
   }
 
   const tokenAddress = addressInput.value;
-  const permit2Address = getPermit2Address(appState.getCaipNetworkId() as number);
+  const permit2Address = getPermit2Address(appState.getChainId() as number);
   const userAddress = appState.getAddress();
   const tokenContract = new ethers.Contract(tokenAddress, erc20Abi, provider);
 
@@ -93,7 +93,7 @@ async function onApproveClick() {
     revokeButton.disabled = true; // disable revoke as well to prevent conflicting actions
 
     const tokenAddress = addressInput.value;
-    const permit2Address = getPermit2Address(appState.getCaipNetworkId() as number);
+    const permit2Address = getPermit2Address(appState.getChainId() as number);
     const tokenContract = new ethers.Contract(tokenAddress, erc20Abi, userSigner);
     const decimals = await tokenContract.decimals();
     const amount = ethers.utils.parseUnits(amountInput.value, decimals);
@@ -129,7 +129,7 @@ async function onRevokeClick() {
     approveButton.disabled = true; // disable approve as well
 
     const tokenAddress = addressInput.value;
-    const permit2Address = getPermit2Address(appState.getCaipNetworkId() as number);
+    const permit2Address = getPermit2Address(appState.getChainId() as number);
     const tokenContract = new ethers.Contract(tokenAddress, erc20Abi, userSigner);
 
     const tx = await tokenContract.approve(permit2Address, 0);

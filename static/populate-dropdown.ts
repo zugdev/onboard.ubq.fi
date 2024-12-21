@@ -13,7 +13,7 @@ const tokenSelector = document.querySelector(".token-selector") as HTMLInputElem
 const tokenOptions = document.querySelector("#token-options") as HTMLSelectElement;
 
 export function updateTokens() {
-  const networkId = Number(appState.getCaipNetworkId());
+  const networkId = Number(appState.getChainId());
 
   let tokens = {};
 

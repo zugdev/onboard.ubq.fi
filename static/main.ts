@@ -60,7 +60,7 @@ export let userSigner: ethers.Signer | undefined;
 let web3Provider: ethers.providers.Web3Provider | undefined;
 
 async function initializeProviderAndSigner() {
-  const networkId = appState.getCaipNetwork()?.id;
+  const networkId = appState.getChainId();
   if (networkId && providersUrl[networkId]) {
     // read-only provider for fetching
     provider = new ethers.providers.JsonRpcProvider(providersUrl[networkId]);
