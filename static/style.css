@@ -100,13 +100,13 @@ header {
   color: #f22207;
 }
 
-.close-modal {
+.error-close-modal {
   background: none;
   border: none;
   cursor: pointer;
 }
 
-.close-modal svg {
+.error-close-modal svg {
   width: 30px;
   height: 30px;
 }
@@ -165,13 +165,13 @@ header {
   color: #5af55a;
 }
 
-.close-modal {
+.success-close-modal {
   background: none;
   border: none;
   cursor: pointer;
 }
 
-.close-modal svg {
+.success-close-modal svg {
   width: 30px;
   height: 30px;
 }
@@ -187,8 +187,12 @@ header {
   max-height: 400px;
   white-space: pre-wrap;
   text-overflow: ellipsis;
-  overflow-y: scroll;
   word-break: break-word;
+}
+
+.tx-hash {
+  color: #fff;
+  text-decoration: underline;
 }
 
 /* Content Area Styles */
