@@ -6,10 +6,8 @@ import { renderErrorInModal } from "./display-popup-modal";
 import { updateTokens } from "./populate-dropdown";
 import { isApprovalValid, setupApproveButton, setupRevokeButton, setupValidityListener } from "./handle-approval";
 
-// All unhandled errors are caught and displayed in a modal
+// all unhandled errors are caught and displayed in a modal
 window.addEventListener("error", (event: ErrorEvent) => renderErrorInModal(event.error));
-
-// All unhandled promise rejections are caught and displayed in a modal
 window.addEventListener("unhandledrejection", (event: PromiseRejectionEvent) => {
   renderErrorInModal(event.reason as Error);
   event.preventDefault();
@@ -57,60 +55,58 @@ export const appState = createAppKit({
   },
 });
 
-// create provider & signer for gnosis
-const networkId = appState.getCaipNetwork()?.id;
-export let provider = networkId ? new ethers.providers.JsonRpcProvider(providersUrl[networkId]) : undefined;
-export let userSigner: ethers.Signer;
+export let provider: ethers.providers.JsonRpcProvider | undefined;
+export let userSigner: ethers.Signer | undefined;
+let web3Provider: ethers.providers.Web3Provider | undefined;
 
-async function waitForConnection() {
-  return new Promise<void>((resolve) => {
-    const interval = setInterval(() => {
-      if (appState.getIsConnectedState()) {
-        if (provider) {
-          userSigner = provider.getSigner(appState.getAddress());
-        } else {
-          console.error("Provider is undefined");
-        }
-        setupApproveButton();
-        setupRevokeButton();
-        console.log(`user connected: ${appState.getAddress()}`);
-        clearInterval(interval);
-        resolve();
-      } else {
-        console.log("waiting for user to connect...");
-      }
-    }, 1000);
-  });
+async function initializeProviderAndSigner() {
+  const networkId = appState.getCaipNetwork()?.id;
+  if (networkId && providersUrl[networkId]) {
+    // read-only provider for fetching
+    provider = new ethers.providers.JsonRpcProvider(providersUrl[networkId]);
+  } else {
+    console.error("No provider URL found for the current network ID");
+    provider = undefined;
+  }
+
+  // if user is connected, set up the signer using the injected provider (window.ethereum)
+  if (appState.getIsConnectedState() && window.ethereum) {
+    const ethereum = window.ethereum as ethers.providers.ExternalProvider;
+    if (ethereum.request) {
+      await ethereum.request({ method: "eth_requestAccounts" });
+    }
+
+    // Create a Web3Provider from window.ethereum
+    web3Provider = new ethers.providers.Web3Provider(window.ethereum);
+
+    // web3Provider signer will handle transaction signing
+    userSigner = web3Provider.getSigner(appState.getAddress());
+
+    console.log("User address:", await userSigner.getAddress());
+  } else {
+    userSigner = undefined;
+  }
+
+  // update UI elements that depend on connection state
+  isApprovalValid();
+  setupApproveButton();
+  setupRevokeButton();
+  updateTokens();
 }
 
 function handleNetworkSwitch() {
-  // get network changes
+  // network change listener
   appState.subscribeCaipNetworkChange(async (newState?: { id: string | number; name: string }) => {
     if (newState) {
-      switchProvider(newState.id.toString());
-      setupApproveButton(); // update approve button
-      setupRevokeButton(); // update revoke button
-      updateTokens(); // update known tokens on the dropdown
-    } else {
-      console.error("New state is undefined");
+      await initializeProviderAndSigner();
+      console.log(`Network switched to ${newState.name} (${newState.id})`);
     }
   });
 
-  // get connected/disconnected
+  // wallet connection listener
   appState.subscribeWalletInfo(async () => {
-    isApprovalValid();
+    await initializeProviderAndSigner();
   });
-}
-
-function switchProvider(network: string) {
-  const url = providersUrl[network];
-  if (url) {
-    provider = new ethers.providers.JsonRpcProvider(url);
-    userSigner = provider.getSigner(appState.getAddress());
-    console.log(`switched provider to ${provider.connection.url}`);
-  } else {
-    console.error(`No URL found for network: ${network}`);
-  }
 }
 
 export async function mainModule() {
@@ -119,10 +115,13 @@ export async function mainModule() {
     updateTokens(); // update known tokens on the dropdown
     setupApproveButton(); // setup approve button
     setupRevokeButton(); // setup revoke button
-    void waitForConnection();
     handleNetworkSwitch();
+
+    // initialize for the first time
+    await initializeProviderAndSigner();
   } catch (error) {
     console.error("Error in main:", error);
+    renderErrorInModal(error as Error);
   }
 }
 

@@ -2,7 +2,7 @@ import { appState } from "./main";
 
 const tokensByNetwork: { [key: number]: { [token: string]: string } } = {
   1: {
-    UUSD: "0x4DA97a8b831C345dBe6d16FF7432DF2b7b776d98",
+    UUSD: "0x0f644658510c95cb46955e55d7ba9dda9e9fbec6",
   },
   100: {
     UUSD: "0xc6ed4f520f6a4e4dc27273509239b7f8a68d2068",

@@ -11,7 +11,6 @@ const approveButton = document.querySelector(".approve-button") as HTMLButtonEle
 const revokeButton = document.querySelector(".revoke-button") as HTMLButtonElement;
 
 function isValidAddress(): boolean {
-  // Check if the address is 20 bytes long (40 characters) excluding the '0x' prefix
   const isValid = /^0x[a-fA-F0-9]{40}$/.test(addressInput.value);
 
   if (isValid) {
@@ -26,7 +25,6 @@ function isValidAddress(): boolean {
 }
 
 function isValidAmount(): boolean {
-  // Check if the amount is a positive number
   const isValid = !isNaN(Number(amountInput.value)) && Number(amountInput.value) > 0;
 
   if (isValid) {
@@ -48,12 +46,17 @@ export function isApprovalValid() {
   approveButton.disabled = !(isConnected && isAddressValid && isAmountValid);
   revokeButton.disabled = !(isConnected && isAddressValid);
 
-  if (isAmountValid && appState.getIsConnectedState()) {
+  if (isAmountValid && isAddressValid && isConnected) {
     void getCurrentAllowance();
   }
 }
 
 async function getCurrentAllowance() {
+  if (!provider) {
+    console.error("Provider is not initialized");
+    return;
+  }
+
   const tokenAddress = addressInput.value;
   const permit2Address = getPermit2Address(appState.getCaipNetworkId() as number);
   const userAddress = appState.getAddress();
@@ -73,39 +76,53 @@ async function getCurrentAllowance() {
 }
 
 export function setupApproveButton() {
-  approveButton.addEventListener("click", async () => {
+  approveButton.removeEventListener("click", onApproveClick); // ensure no duplicate listeners
+  approveButton.addEventListener("click", onApproveClick);
+}
+
+async function onApproveClick() {
+  if (!userSigner) {
+    console.error("No signer available. Cannot send transaction.");
+    return;
+  }
+
+  try {
     const tokenAddress = addressInput.value;
     const permit2Address = getPermit2Address(appState.getCaipNetworkId() as number);
     const tokenContract = new ethers.Contract(tokenAddress, erc20Abi, userSigner);
-
-    try {
-      const decimals = await tokenContract.decimals();
-      const amount = ethers.utils.parseUnits(amountInput.value, decimals);
-      const tx = await tokenContract.connect(userSigner).approve(permit2Address, amount);
-      await tx.wait();
-      await getCurrentAllowance();
-    } catch (error) {
-      console.error("Error approving allowance:", error);
-      renderErrorInModal(error as Error);
-    }
-  });
+    const decimals = await tokenContract.decimals();
+    const amount = ethers.utils.parseUnits(amountInput.value, decimals);
+    const tx = await tokenContract.approve(permit2Address, amount);
+    await tx.wait();
+    await getCurrentAllowance();
+  } catch (error) {
+    console.error("Error approving allowance:", error);
+    renderErrorInModal(error as Error);
+  }
 }
 
 export function setupRevokeButton() {
-  revokeButton.addEventListener("click", async () => {
+  revokeButton.removeEventListener("click", onRevokeClick); // ensure no duplicate listeners
+  revokeButton.addEventListener("click", onRevokeClick);
+}
+
+async function onRevokeClick() {
+  if (!userSigner) {
+    console.error("No signer available. Cannot send transaction.");
+    return;
+  }
+
+  try {
     const tokenAddress = addressInput.value;
     const permit2Address = getPermit2Address(appState.getCaipNetworkId() as number);
     const tokenContract = new ethers.Contract(tokenAddress, erc20Abi, userSigner);
-
-    try {
-      const tx = await tokenContract.connect(userSigner).approve(permit2Address, 0);
-      await tx.wait();
-      await getCurrentAllowance();
-    } catch (error) {
-      console.error("Error revoking allowance:", error);
-      renderErrorInModal(error as Error);
-    }
-  });
+    const tx = await tokenContract.approve(permit2Address, 0);
+    await tx.wait();
+    await getCurrentAllowance();
+  } catch (error) {
+    console.error("Error revoking allowance:", error);
+    renderErrorInModal(error as Error);
+  }
 }
 
 export function setupValidityListener() {
