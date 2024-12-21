@@ -46,7 +46,7 @@ export function isApprovalButtonsValid() {
   approveButton.disabled = !(isConnected && isAddressValid && isAmountValid);
   revokeButton.disabled = !(isConnected && isAddressValid);
 
-  if (isAmountValid && isAddressValid && isConnected) {
+  if (isAddressValid && isConnected) {
     void getCurrentAllowance();
   }
 }
