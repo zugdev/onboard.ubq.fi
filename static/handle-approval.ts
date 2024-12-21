@@ -86,18 +86,28 @@ async function onApproveClick() {
     return;
   }
 
+  const originalText = approveButton.textContent;
   try {
+    approveButton.textContent = "loading...";
+    approveButton.disabled = true;
+    revokeButton.disabled = true; // disable revoke as well to prevent conflicting actions
+
     const tokenAddress = addressInput.value;
     const permit2Address = getPermit2Address(appState.getCaipNetworkId() as number);
     const tokenContract = new ethers.Contract(tokenAddress, erc20Abi, userSigner);
     const decimals = await tokenContract.decimals();
     const amount = ethers.utils.parseUnits(amountInput.value, decimals);
+
     const tx = await tokenContract.approve(permit2Address, amount);
     await tx.wait();
+
     await getCurrentAllowance();
   } catch (error) {
     console.error("Error approving allowance:", error);
     renderErrorInModal(error as Error);
+  } finally {
+    approveButton.textContent = originalText;
+    isApprovalValid(); // re-check the state to restore buttons correctly
   }
 }
 
@@ -112,16 +122,26 @@ async function onRevokeClick() {
     return;
   }
 
+  const originalText = revokeButton.textContent;
   try {
+    revokeButton.textContent = "Loading...";
+    revokeButton.disabled = true;
+    approveButton.disabled = true; // disable approve as well
+
     const tokenAddress = addressInput.value;
     const permit2Address = getPermit2Address(appState.getCaipNetworkId() as number);
     const tokenContract = new ethers.Contract(tokenAddress, erc20Abi, userSigner);
+
     const tx = await tokenContract.approve(permit2Address, 0);
     await tx.wait();
+
     await getCurrentAllowance();
   } catch (error) {
     console.error("Error revoking allowance:", error);
     renderErrorInModal(error as Error);
+  } finally {
+    revokeButton.textContent = originalText;
+    isApprovalValid(); // re-check state to restore buttons correctly
   }
 }
 
