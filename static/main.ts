@@ -4,10 +4,7 @@ import { gnosis, mainnet, polygon, optimism, arbitrum, base, bsc, blast, zksync,
 import { ethers } from "ethers";
 import { renderErrorInModal } from "./display-popup-modal";
 import { updateTokens } from "./populate-dropdown";
-import { setupApproveButton, setupRevokeButton, setupValidityListener } from "./handle-approval";
-
-// passed in at runtime
-declare const ALCHEMY_KEY: string;
+import { isApprovalValid, setupApproveButton, setupRevokeButton, setupValidityListener } from "./handle-approval";
 
 // All unhandled errors are caught and displayed in a modal
 window.addEventListener("error", (event: ErrorEvent) => renderErrorInModal(event.error));
@@ -27,20 +24,18 @@ const metadata = {
   icons: ["https://avatars.githubusercontent.com/u/76412717"],
 };
 
-const alchemyKey = ALCHEMY_KEY || "";
-
 const providersUrl: { [key: string]: string } = {
-  100: alchemyKey ? `https://gnosis-mainnet.g.alchemy.com/v2/${alchemyKey}` : "https://rpc.gnosischain.com",
-  1: alchemyKey ? `https://eth-mainnet.alchemyapi.io/v2/${alchemyKey}` : "https://eth.llamarpc.com",
-  137: alchemyKey ? `https://polygon-mainnet.g.alchemy.com/v2/${alchemyKey}` : "https://polygon.llamarpc.com",
-  10: alchemyKey ? `https://opt-mainnet.g.alchemy.com/v2/${alchemyKey}` : "https://optimism.llamarpc.com",
-  42161: alchemyKey ? `https://arb-mainnet.g.alchemy.com/v2/${alchemyKey}` : "https://arbitrum.llamarpc.com",
-  8453: alchemyKey ? `https://base-mainnet.g.alchemy.com/v2/${alchemyKey}` : "https://base.llamarpc.com",
-  56: alchemyKey ? `https://bnb-mainnet.g.alchemy.com/v2/${alchemyKey}` : "https://binance.llamarpc.com",
-  81457: alchemyKey ? `https://blast-mainnet.g.alchemy.com/v2/${alchemyKey}` : "https://blast.drpc.org",
-  324: alchemyKey ? `https://zksync-mainnet.g.alchemy.com/v2/${alchemyKey}` : "https://mainnet.era.zksync.io",
-  43114: alchemyKey ? `https://avax-mainnet.g.alchemy.com/v2/${alchemyKey}` : "https://rpc.ankr.com/avalanche",
-  480: alchemyKey ? `https://worldchain-mainnet.g.alchemy.com/v2/${alchemyKey}` : "https://rpc.worldchain.network"
+  100: "https://rpc.gnosischain.com",
+  1: "https://eth.llamarpc.com",
+  137: "https://polygon.llamarpc.com",
+  10: "https://optimism.llamarpc.com",
+  42161: "https://arbitrum.llamarpc.com",
+  8453: "https://base.llamarpc.com",
+  56: "https://binance.llamarpc.com",
+  81457: "https://blast.drpc.org",
+  324: "https://mainnet.era.zksync.io",
+  43114: "https://rpc.ankr.com/avalanche",
+  480: "https://rpc.worldchain.network",
 };
 
 export const appState = createAppKit({
@@ -55,14 +50,21 @@ export const appState = createAppKit({
 });
 
 // create provider & signer for gnosis
-export let provider = new ethers.providers.JsonRpcProvider(providersUrl[appState.getCaipNetwork().id]);
+const networkId = appState.getCaipNetwork()?.id;
+export let provider = networkId ? new ethers.providers.JsonRpcProvider(providersUrl[networkId]) : undefined;
 export let userSigner: ethers.Signer;
 
 async function waitForConnection() {
   return new Promise<void>((resolve) => {
     const interval = setInterval(() => {
       if (appState.getIsConnectedState()) {
-        userSigner = provider.getSigner(appState.getAddress());
+        if (provider) {
+          userSigner = provider.getSigner(appState.getAddress());
+        } else {
+          console.error("Provider is undefined");
+        }
+        setupApproveButton();
+        setupRevokeButton();
         console.log(`user connected: ${appState.getAddress()}`);
         clearInterval(interval);
         resolve();
@@ -74,11 +76,21 @@ async function waitForConnection() {
 }
 
 function handleNetworkSwitch() {
-  appState.subscribeCaipNetworkChange(async (newNetwork: { id: string; name: string}) => {
-    switchProvider(newNetwork?.id);
-    updateTokens(); // update known tokens on the dropdown
-    setupApproveButton(); // setup approve button
-    setupRevokeButton(); // setup revoke button
+  // get network changes
+  appState.subscribeCaipNetworkChange(async (newState?: { id: string | number; name: string }) => {
+    if (newState) {
+      switchProvider(newState.id.toString());
+      setupApproveButton(); // update approve button
+      setupRevokeButton(); // update revoke button
+      updateTokens(); // update known tokens on the dropdown
+    } else {
+      console.error("New state is undefined");
+    }
+  });
+
+  // get connected/disconnected
+  appState.subscribeWalletInfo(async () => {
+    isApprovalValid();
   });
 }
 
@@ -87,7 +99,7 @@ function switchProvider(network: string) {
   if (url) {
     provider = new ethers.providers.JsonRpcProvider(url);
     userSigner = provider.getSigner(appState.getAddress());
-    console.log(`switched provider to ${network}`);
+    console.log(`switched provider to ${provider.connection.url}`);
   } else {
     console.error(`No URL found for network: ${network}`);
   }
