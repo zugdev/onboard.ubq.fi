@@ -1,6 +1,6 @@
 import { createAppKit } from "@reown/appkit";
 import { Ethers5Adapter } from "@reown/appkit-adapter-ethers5";
-import { gnosis, mainnet, polygon, optimism, arbitrum, base, bsc, blast, zksync, avalanche, worldchain } from "@reown/appkit/networks";
+import { anvil, gnosis, mainnet, polygon, optimism, arbitrum, base, bsc, blast, zksync, avalanche, worldchain, AppKitNetwork } from "@reown/appkit/networks";
 import { ethers } from "ethers";
 import { renderErrorInModal } from "./display-popup-modal";
 import { updateTokens } from "./populate-dropdown";
@@ -38,9 +38,17 @@ const providersUrl: { [key: string]: string } = {
   480: "https://rpc.worldchain.network",
 };
 
+let networks: [AppKitNetwork, ...AppKitNetwork[]];
+if (window.location.hostname === "localhost" || window.location.hostname === "0.0.0.0") {
+  console.log("enabling anvil");
+  networks = [anvil, gnosis, mainnet, polygon, optimism, arbitrum, base, bsc, blast, zksync, avalanche, worldchain];
+} else {
+  networks = [gnosis, mainnet, polygon, optimism, arbitrum, base, bsc, blast, zksync, avalanche, worldchain];
+}
+
 export const appState = createAppKit({
   adapters: [new Ethers5Adapter()],
-  networks: [gnosis, mainnet, polygon, optimism, arbitrum, base, bsc, blast, zksync, avalanche, worldchain],
+  networks,
   defaultNetwork: gnosis,
   metadata,
   projectId,

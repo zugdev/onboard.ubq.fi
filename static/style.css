@@ -189,24 +189,24 @@ header {
   padding: 50px;
 }
 
-.approve-header{
+.approve-header {
   width: 100%;
 }
 
-.approve-content{
+.approve-content {
   display: flex;
   flex-direction: column;
   width: 100%;
   padding: 40px 0;
 }
 
-.current-allowance{
+.current-allowance {
   padding: 10px;
   font-size: 1.1rem;
   color: #ddd;
 }
 
-.approve-selectors{
+.approve-selectors {
   width: 100%;
   display: flex;
   justify-content: left;
@@ -239,7 +239,8 @@ header {
   overflow: ellipsis;
 }
 
-.amount-selector:hover, .token-selector:hover {
+.amount-selector:hover,
+.token-selector:hover {
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
@@ -248,7 +249,7 @@ header {
   position: relative;
   bottom: 0;
   width: 100%;
-  gap: 10px
+  gap: 10px;
 }
 
 .approve-footer button {
