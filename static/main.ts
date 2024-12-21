@@ -55,8 +55,6 @@ export const appState = createAppKit({
   },
 });
 
-console.log(appState.getWalletProvider());
-
 export let provider: ethers.providers.JsonRpcProvider | undefined;
 export let userSigner: ethers.Signer | undefined;
 let web3Provider: ethers.providers.Web3Provider | undefined;

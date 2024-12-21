@@ -1,5 +1,5 @@
 export function renderErrorInModal(error: Error) {
-  const modal = document.getElementById("modal");
+  const modal = document.getElementById("error-modal");
   const closeButton = document.getElementsByClassName("close-modal");
   if (closeButton) {
     closeButton[0].addEventListener("click", closeErrorModal);
@@ -16,7 +16,31 @@ export function renderErrorInModal(error: Error) {
 }
 
 export function closeErrorModal() {
-  const modal = document.getElementById("modal");
+  const modal = document.getElementById("error-modal");
+  if (modal) {
+    modal.style.display = "none";
+  }
+}
+
+export function renderSuccessModal(transactionHash: string) {
+  const modal = document.getElementById("success-modal");
+  const closeButton = document.getElementsByClassName("close-modal");
+  if (closeButton) {
+    closeButton[0].addEventListener("click", closeSuccessModal);
+  }
+  const successMessageElement = document.getElementById("success-message");
+
+  if (successMessageElement) {
+    successMessageElement.textContent = `You've successfully signed the transaction. Your allowance balance should be updated in a few blocks.\nYour transaction hash is ${transactionHash}`;
+  }
+
+  if (modal) {
+    modal.style.display = "flex";
+  }
+}
+
+export function closeSuccessModal() {
+  const modal = document.getElementById("success-modal");
   if (modal) {
     modal.style.display = "none";
   }

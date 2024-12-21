@@ -1,5 +1,5 @@
 import { erc20Abi } from "./abis";
-import { renderErrorInModal } from "./display-popup-modal";
+import { renderErrorInModal, renderSuccessModal } from "./display-popup-modal";
 import { appState, provider, userSigner } from "./main";
 import { getPermit2Address } from "./permit2-addresses";
 import { ethers } from "ethers";
@@ -100,6 +100,8 @@ async function onApproveClick() {
 
     const tx = await tokenContract.approve(permit2Address, amount);
     await tx.wait();
+
+    renderSuccessModal(tx.hash);
 
     await getCurrentAllowance();
   } catch (error) {
