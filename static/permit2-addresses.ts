@@ -14,7 +14,7 @@ export function getPermit2Address(networkId: number): string | undefined {
     case 480:
       return "0x000000000022D473030F116dDEE9F6B43aC78BA3";
     case 324:
-      return "0x0000000000225e31d15943971f47ad3022f714fa";
+      return "0x0000000000225e31d15943971f47ad3022f714fa"; //https://docs.uniswap.org/contracts/v3/reference/deployments/ZKsync-deployments
     default:
       return undefined;
   }
