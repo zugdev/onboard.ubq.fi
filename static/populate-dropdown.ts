@@ -12,7 +12,7 @@ const tokensByNetwork: { [key: number]: { [token: string]: string } } = {
 const tokenSelector = document.querySelector(".token-selector") as HTMLInputElement;
 const tokenOptions = document.querySelector("#token-options") as HTMLSelectElement;
 
-export function updateTokens() {
+export function updateTokenDropdown() {
   const networkId = Number(appState.getChainId());
 
   let tokens = {};

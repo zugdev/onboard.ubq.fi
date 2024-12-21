@@ -38,7 +38,7 @@ function isValidAmount(): boolean {
   return isValid;
 }
 
-export function isApprovalValid() {
+export function isApprovalButtonsValid() {
   const isConnected = appState.getIsConnectedState();
   const isAddressValid = isValidAddress();
   const isAmountValid = isValidAmount();
@@ -107,7 +107,7 @@ async function onApproveClick() {
     renderErrorInModal(error as Error);
   } finally {
     approveButton.textContent = originalText;
-    isApprovalValid(); // re-check the state to restore buttons correctly
+    isApprovalButtonsValid(); // re-check the state to restore buttons correctly
   }
 }
 
@@ -141,11 +141,11 @@ async function onRevokeClick() {
     renderErrorInModal(error as Error);
   } finally {
     revokeButton.textContent = originalText;
-    isApprovalValid(); // re-check state to restore buttons correctly
+    isApprovalButtonsValid(); // re-check state to restore buttons correctly
   }
 }
 
-export function setupValidityListener() {
-  amountInput.addEventListener("change", isApprovalValid);
-  addressInput.addEventListener("change", isApprovalValid);
+export function setupButtonValidityListener() {
+  amountInput.addEventListener("change", isApprovalButtonsValid);
+  addressInput.addEventListener("change", isApprovalButtonsValid);
 }

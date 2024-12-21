@@ -3,8 +3,8 @@ import { Ethers5Adapter } from "@reown/appkit-adapter-ethers5";
 import { anvil, gnosis, mainnet, polygon, optimism, arbitrum, base, bsc, blast, zksync, avalanche, worldchain, AppKitNetwork } from "@reown/appkit/networks";
 import { ethers } from "ethers";
 import { renderErrorInModal } from "./display-popup-modal";
-import { updateTokens } from "./populate-dropdown";
-import { isApprovalValid, setupApproveButton, setupRevokeButton, setupValidityListener } from "./handle-approval";
+import { updateTokenDropdown } from "./populate-dropdown";
+import { isApprovalButtonsValid, setupApproveButton, setupRevokeButton, setupButtonValidityListener } from "./handle-approval";
 
 // all unhandled errors are caught and displayed in a modal
 window.addEventListener("error", (event: ErrorEvent) => renderErrorInModal(event.error));
@@ -90,8 +90,8 @@ async function initializeProviderAndSigner() {
   }
 
   // update UI elements that depend on connection state
-  isApprovalValid();
-  updateTokens();
+  isApprovalButtonsValid();
+  updateTokenDropdown();
 }
 
 function handleNetworkSwitch() {
@@ -111,10 +111,10 @@ function handleNetworkSwitch() {
 
 export async function mainModule() {
   try {
-    setupValidityListener(); // setup amount and token validity listeners
-    updateTokens(); // update known tokens on the dropdown
-    setupApproveButton(); // setup approve button
-    setupRevokeButton(); // setup revoke button
+    setupButtonValidityListener();
+    updateTokenDropdown();
+    setupApproveButton();
+    setupRevokeButton();
     handleNetworkSwitch();
 
     // initialize for the first time
