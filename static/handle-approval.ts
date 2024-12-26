@@ -137,6 +137,8 @@ async function onRevokeClick() {
     const tx = await tokenContract.approve(permit2Address, 0);
     await tx.wait();
 
+    renderSuccessModal(tx.hash);
+
     await getCurrentAllowance();
   } catch (error) {
     console.error("Error revoking allowance:", error);
