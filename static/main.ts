@@ -21,8 +21,7 @@ const metadata = {
   url: "https://onboard.ubq.fi",
   icons: ["https://avatars.githubusercontent.com/u/76412717"],
 };
-
-const providersUrl: { [key: string]: string } = {
+export const providersUrl: { [key: string]: string } = {
   100: "https://rpc.gnosischain.com",
   1: "https://eth.llamarpc.com",
   137: "https://polygon.llamarpc.com",
@@ -34,6 +33,20 @@ const providersUrl: { [key: string]: string } = {
   324: "https://mainnet.era.zksync.io",
   43114: "https://rpc.ankr.com/avalanche",
   480: "https://rpc.worldchain.network",
+};
+
+export const explorersUrl: { [key: string]: string } = {
+  100: "https://gnosisscan.io",
+  1: "https://etherscan.io",
+  137: "https://polygonscan.com",
+  10: "https://optimistic.etherscan.io",
+  42161: "https://arbiscan.io",
+  8453: "https://basescan.org",
+  56: "https://bscscan.com",
+  81457: "https://blastscan.io",
+  324: "https://explorer.zksync.io",
+  43114: "https://snowtrace.io",
+  480: "https://explorer.worldchain.network",
 };
 
 let networks: [AppKitNetwork, ...AppKitNetwork[]];
