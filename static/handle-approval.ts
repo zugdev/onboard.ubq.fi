@@ -88,7 +88,7 @@ async function onApproveClick() {
 
   const originalText = approveButton.textContent;
   try {
-    approveButton.textContent = "loading...";
+    approveButton.textContent = "Loading...";
     approveButton.disabled = true;
     revokeButton.disabled = true; // disable revoke as well to prevent conflicting actions
 
