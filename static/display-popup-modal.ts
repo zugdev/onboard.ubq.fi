@@ -1,3 +1,5 @@
+import { appState, explorersUrl } from "./main";
+
 export function renderErrorInModal(error: Error) {
   const modal = document.getElementById("error-modal");
   const closeButton = document.getElementsByClassName("error-close-modal");
@@ -32,6 +34,20 @@ export function renderSuccessModal(transactionHash: string) {
 
   if (successMessageElement) {
     successMessageElement.innerHTML = `You've successfully signed the transaction. Your allowance balance should be updated in a few blocks.<br><br>transaction hash: <span class="tx-hash">${transactionHash}</span>`;
+    const chainId = appState.getChainId();
+    const explorerUrl = chainId !== undefined ? explorersUrl[chainId] : "";
+    const txLink = document.createElement("a");
+    txLink.href = `${explorerUrl}/tx/${transactionHash}`;
+    txLink.target = "_blank";
+    txLink.rel = "noopener noreferrer";
+    txLink.style.color = "white";
+    txLink.textContent = transactionHash;
+
+    const txHashElement = successMessageElement.querySelector(".tx-hash");
+    if (txHashElement) {
+      txHashElement.innerHTML = "";
+      txHashElement.appendChild(txLink);
+    }
   }
 
   if (modal) {
