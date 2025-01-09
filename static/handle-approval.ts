@@ -10,15 +10,18 @@ const currentAllowanceAmount = document.querySelector(".current-allowance-amount
 const approveButton = document.querySelector(".approve-button") as HTMLButtonElement;
 const revokeButton = document.querySelector(".revoke-button") as HTMLButtonElement;
 
+const red = "1px solid red";
+const green = "1px solid #5af55a";
+const grey = "1px solid rgba(255, 255, 255, 0.1)";
+
 function isValidAddress(): boolean {
+  //reset color
+  addressInput.style.border = grey;
+
   const isValid = /^0x[a-fA-F0-9]{40}$/.test(addressInput.value);
 
-  if (isValid) {
-    addressInput.style.border = "1px solid #5af55a";
-  } else if (addressInput.value === "") {
-    addressInput.style.border = "1px solid rgba(255, 255, 255, 0.1)";
-  } else {
-    addressInput.style.border = "1px solid red";
+  if (!isValid && addressInput.value !== "") {
+    addressInput.style.border = red;
   }
 
   return isValid;
@@ -28,33 +31,41 @@ function isValidAmount(): boolean {
   const isValid = !isNaN(Number(amountInput.value)) && Number(amountInput.value) > 0;
 
   if (isValid) {
-    amountInput.style.border = "1px solid #5af55a";
+    amountInput.style.border = green;
   } else if (amountInput.value === "") {
-    amountInput.style.border = "1px solid rgba(255, 255, 255, 0.1)";
+    amountInput.style.border = grey;
   } else {
-    amountInput.style.border = "1px solid red";
+    amountInput.style.border = red;
   }
 
   return isValid;
 }
 
-export function isApprovalButtonsValid() {
+export async function isApprovalButtonsValid() {
+  currentAllowanceAmount.textContent = "...";
   const isConnected = appState.getIsConnectedState();
   const isAddressValid = isValidAddress();
   const isAmountValid = isValidAmount();
 
-  approveButton.disabled = !(isConnected && isAddressValid && isAmountValid);
-  revokeButton.disabled = !(isConnected && isAddressValid);
+  approveButton.disabled = true;
+  revokeButton.disabled = true;
 
   if (isAddressValid && isConnected) {
-    void getCurrentAllowance();
+    const isSuccess = await getCurrentAllowance();
+    if (isSuccess) {
+      approveButton.disabled = !isAmountValid;
+      revokeButton.disabled = false;
+      addressInput.style.border = green;
+    } else {
+      addressInput.style.border = red;
+    }
   }
 }
 
-async function getCurrentAllowance() {
+async function getCurrentAllowance(): Promise<boolean> {
   if (!provider) {
     console.error("Provider is not initialized");
-    return;
+    return false;
   }
 
   const tokenAddress = addressInput.value;
@@ -68,10 +79,10 @@ async function getCurrentAllowance() {
     const allowance = await tokenContract.allowance(userAddress, permit2Address);
     const formattedAllowance = ethers.utils.formatUnits(allowance, decimals);
     currentAllowanceAmount.textContent = formattedAllowance + " " + symbol;
-    return allowance;
+    return true;
   } catch (error) {
-    console.error("Error fetching allowance:", error);
-    renderErrorInModal(error as Error);
+    currentAllowanceAmount.textContent = "not a valid token";
+    return false;
   }
 }
 
@@ -109,7 +120,7 @@ async function onApproveClick() {
     renderErrorInModal(error as Error);
   } finally {
     approveButton.textContent = originalText;
-    isApprovalButtonsValid(); // re-check the state to restore buttons correctly
+    await isApprovalButtonsValid(); // re-check the state to restore buttons correctly
   }
 }
 
@@ -145,11 +156,11 @@ async function onRevokeClick() {
     renderErrorInModal(error as Error);
   } finally {
     revokeButton.textContent = originalText;
-    isApprovalButtonsValid(); // re-check state to restore buttons correctly
+    await isApprovalButtonsValid(); // re-check state to restore buttons correctly
   }
 }
 
-export function setupButtonValidityListener() {
+export async function setupButtonValidityListener() {
   amountInput.addEventListener("change", isApprovalButtonsValid);
   addressInput.addEventListener("change", isApprovalButtonsValid);
 }

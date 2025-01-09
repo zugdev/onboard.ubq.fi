@@ -101,7 +101,7 @@ async function initializeProviderAndSigner() {
   }
 
   // update UI elements that depend on connection state
-  isApprovalButtonsValid();
+  await isApprovalButtonsValid();
   updateTokenDropdown();
 }
 
@@ -122,7 +122,7 @@ function handleNetworkSwitch() {
 
 export async function mainModule() {
   try {
-    setupButtonValidityListener();
+    await setupButtonValidityListener();
     updateTokenDropdown();
     setupApproveButton();
     setupRevokeButton();
