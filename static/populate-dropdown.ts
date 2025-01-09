@@ -15,9 +15,7 @@ const tokenOptions = document.querySelector("#token-options") as HTMLSelectEleme
 export function updateTokenDropdown() {
   const networkId = Number(appState.getChainId());
 
-  let tokens = {};
-
-  tokens = tokensByNetwork[networkId] || {};
+  const tokens = tokensByNetwork[networkId] || {};
 
   if (tokenSelector && tokenOptions) {
     tokenOptions.innerHTML = ""; // Clear existing options
